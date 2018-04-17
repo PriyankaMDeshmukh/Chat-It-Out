@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "931068402400",
+    "firebase_url": "https://chatitout-50373.firebaseio.com",
+    "project_id": "chatitout-50373",
+    "storage_bucket": "chatitout-50373.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:931068402400:android:67074a9625f5b61a",
+        "android_client_info": {
+          "package_name": "com.sdsuchatapp.chatitout"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "931068402400-ql36sk4vl1rcqn39q84u39q81urk8gou.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sdsuchatapp.chatitout",
+            "certificate_hash": "a75adb842f9036c12265f5db6b519fe9697dc0fa"
+          }
+        },
+        {
+          "client_id": "931068402400-e0djlcdgeftbg8h5kdbl3gm5eaj78r38.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCOm8dAixFy6aW9zuarge_KvTmrmRsd_QY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "931068402400-e0djlcdgeftbg8h5kdbl3gm5eaj78r38.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
