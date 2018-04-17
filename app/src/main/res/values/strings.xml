@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ChatItOut</string>
+    <string name="verifyPhoneNumber">Please verify phone number</string>
+    <string name="verifyInfo">You will receive a SMS from ChatItOut.</string>
 </resources>
