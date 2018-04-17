@@ -82,11 +82,12 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void authenticate(View view){
-        startPhoneNumberAuthentication(view.findViewById(R.id.phoneNumber).toString());
+        startPhoneNumberAuthentication(this.phoneNumber.getText().toString());
     }
 
     private void startPhoneNumberAuthentication(String phoneNumber) {
         // [START start_phone_auth]
+
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
                 phoneNumber,        // Phone number to verify
                 60,                 // Timeout duration
