@@ -1,5 +1,6 @@
 package com.sdsuchatapp.chatitout;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -33,7 +34,8 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         phoneNumber = findViewById(R.id.phoneNumber);
         auth = FirebaseAuth.getInstance();
-
+        Intent chat = new Intent(getApplicationContext(), ChatActivity.class); //this keyword did not work
+        startActivity(chat);
 
     }
 
