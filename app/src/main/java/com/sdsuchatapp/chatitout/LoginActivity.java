@@ -1,5 +1,6 @@
 package com.sdsuchatapp.chatitout;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -46,7 +47,9 @@ public class LoginActivity extends AppCompatActivity {
     private static final int STATE_VERIFY_SUCCESS = 4;
     private static final int STATE_SIGNIN_FAILED = 5;
     private static final int STATE_SIGNIN_SUCCESS = 6;
+    private static final int STATE_ALREADY_LOGGED_IN = 7;
     private static final String TAG = "LoginActivity";
+    private ProgressDialog progressDialog;
 
     private String verificationId;
 
@@ -88,10 +91,15 @@ public class LoginActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             onRestoreInstanceState(savedInstanceState);
         }
-
         setContentView(R.layout.activity_login);
 
-        auth = FirebaseAuth.getInstance();
+
+
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle("Authenticating User");
+        progressDialog.setMessage("Please wait while Chat-It-Out verifies you");
+        progressDialog.setCanceledOnTouchOutside(false);
 
         phoneNumber = findViewById(R.id.phoneNumber);
         phoneProgressBar = findViewById(R.id.phoneProgressBar);
@@ -104,6 +112,10 @@ public class LoginActivity extends AppCompatActivity {
         phoneVerification.setVisibility(View.INVISIBLE);
         phoneVerificationProgressBar.setVisibility(View.INVISIBLE);
         verifyCodeButton.setVisibility(View.INVISIBLE);
+        auth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = auth.getCurrentUser();
+        updateUI(currentUser);
+
 
 
         callbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
@@ -116,6 +128,7 @@ public class LoginActivity extends AppCompatActivity {
                 // 2 - Auto-retrieval. On some devices Google Play services can automatically
                 //     detect the incoming verification SMS and perform verification without
                 //     user action.
+                progressDialog.show();
                 Log.d(TAG, "onVerificationCompleted:" + credential);
                 // [START_EXCLUDE silent]
                 phoneProgressBar.setVisibility(View.INVISIBLE);
@@ -214,21 +227,7 @@ public class LoginActivity extends AppCompatActivity {
     // [END sign_in_with_phone]
 
 
-    // [START on_start_check_user]
-    @Override
-    public void onStart() {
-        super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = auth.getCurrentUser();
-        updateUI(currentUser);
 
-        // [START_EXCLUDE]
-        if (verificationInProgress && validatePhoneNumber()) {
-            startPhoneNumberAuthentication(phoneNumber.getText().toString());
-        }
-        // [END_EXCLUDE]
-    }
-    // [END on_start_check_user]
 
     private void updateUI(int uiState) {
         updateUI(uiState, auth.getCurrentUser(), null);
@@ -236,7 +235,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void updateUI(FirebaseUser user) {
         if (user != null) {
-            updateUI(STATE_SIGNIN_SUCCESS, user);
+            updateUI(STATE_ALREADY_LOGGED_IN);
         } else {
             updateUI(STATE_INITIALIZED);
         }
@@ -262,10 +261,6 @@ public class LoginActivity extends AppCompatActivity {
                 phoneProgressBar.setVisibility(View.INVISIBLE);
                 phoneVerification.setVisibility(View.VISIBLE);
                 verifyCodeButton.setVisibility(View.VISIBLE);
-
-
-
-
                 break;
             case STATE_VERIFY_FAILED:
                 // Verification has failed, show all options
@@ -274,7 +269,11 @@ public class LoginActivity extends AppCompatActivity {
             case STATE_VERIFY_SUCCESS:
                 // Verification has succeeded, proceed to firebase sign in
                 Toast.makeText(getApplicationContext(), "Verification has succeded", Toast.LENGTH_SHORT).show();
-
+                break;
+            case STATE_ALREADY_LOGGED_IN:
+                Intent go = new Intent(getApplicationContext(),ChatActivity.class);
+                startActivity(go);
+                finish();
 
                 break;
             case STATE_SIGNIN_FAILED:
@@ -284,8 +283,10 @@ public class LoginActivity extends AppCompatActivity {
                 break;
             case STATE_SIGNIN_SUCCESS:
                 // Np-op, handled by sign-in check
-                Toast.makeText(getApplicationContext(), "sign in success", Toast.LENGTH_SHORT).show();
                 phoneVerificationProgressBar.setVisibility(View.INVISIBLE);
+                if(!progressDialog.isShowing())
+                    progressDialog.show();
+
                 //Go to Main Activity
                 final String uid = user.getUid();
                 if(uid!=null) {
@@ -304,21 +305,27 @@ public class LoginActivity extends AppCompatActivity {
                                     public void onDataChange(DataSnapshot dataSnapshot) {
                                         String name = dataSnapshot.child("displayName").getValue().toString();
                                         String profileThumbnail = dataSnapshot.child("profileThumbnail").getValue().toString();
+                                        String profilePicture = dataSnapshot.child("profilePicture").getValue().toString();
                                         String phoneNumber = dataSnapshot.child("phoneNumber").getValue().toString();
                                         Intent go = new Intent(getApplicationContext(),RegistrationActivity.class);
                                         Bundle bundle = new Bundle();
                                         HashMap<String,String> userData = new HashMap<>();
                                         userData.put("displayName", name);
                                         userData.put("profileThumbnail", profileThumbnail);
+                                        userData.put("profilePicture", profilePicture);
                                         userData.put("phoneNumber",phoneNumber);
+                                        userData.put("uid",uid);
                                         bundle.putSerializable("HashMap", userData);
                                         go.putExtras(bundle);
-                                        startActivityForResult(go,INTENT_EXAMPLE_REQUEST);
+                                        progressDialog.dismiss();
+                                        startActivity(go);
+                                        finish();
 
                                     }
 
                                     @Override
                                     public void onCancelled(DatabaseError databaseError) {
+                                        progressDialog.dismiss();
                                         Log.w(TAG, "Failed to read value.", databaseError.toException());
                                     }
                                 });
@@ -327,6 +334,8 @@ public class LoginActivity extends AppCompatActivity {
                                 final HashMap<String, String> userData = new HashMap<>();
                                 userData.put("displayName", "");
                                 userData.put("profileThumbnail", "default");
+                                userData.put("profilePicture", "default");
+                                userData.put("uid",uid);
                                 userData.put("phoneNumber",phoneNumber.getText().toString());
                                 database.setValue(userData).addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
@@ -337,7 +346,9 @@ public class LoginActivity extends AppCompatActivity {
                                             Bundle bundle = new Bundle();
                                             bundle.putSerializable("HashMap", userData);
                                             go.putExtras(bundle);
-                                            startActivityForResult(go,INTENT_EXAMPLE_REQUEST);
+                                            progressDialog.dismiss();
+                                            startActivity(go);
+                                            finish();
 
 
                                         }
@@ -349,6 +360,7 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void onCancelled(DatabaseError error) {
                             // Failed to read value
+                            progressDialog.dismiss();
                             Log.w(TAG, "Failed to read value.", error.toException());
                         }
                     });
@@ -390,7 +402,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void authenticate(View view){
-        startPhoneNumberAuthentication(this.phoneNumber.getText().toString());
+        if(validatePhoneNumber())
+            startPhoneNumberAuthentication(this.phoneNumber.getText().toString());
     }
 
     private void startPhoneNumberAuthentication(String phoneNumber) {
