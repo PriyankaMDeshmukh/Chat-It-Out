@@ -24,32 +24,77 @@
         android:layout_centerHorizontal="true"
         android:text="@string/verifyInfo" />
 
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/phoneNumberHolder"
-        android:layout_width="325dp"
-        android:layout_height="54dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="40dp"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:id="@+id/phoneNumberLayout"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:layout_below="@+id/verifyInfo"
-        >
-
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/phoneNumber"
-            android:layout_width="match_parent"
+        android:gravity="center">
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/phoneNumberHolder"
+            android:layout_width="239dp"
             android:layout_height="wrap_content"
-            android:hint="@string/phoneNumber"
-            android:inputType="phone" />
-    </android.support.design.widget.TextInputLayout>
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/phoneNumber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/phoneNumber"
+                android:inputType="phone" />
+        </android.support.design.widget.TextInputLayout>
+        <ProgressBar
+            android:id="@+id/phoneProgressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 
     <Button
-        android:id="@+id/signIn"
+        android:id="@+id/verifyPhoneButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_below="@+id/phoneNumberHolder"
+        android:layout_below="@+id/phoneNumberLayout"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="197dp"
         android:onClick="authenticate"
-        android:text="Sign In" />
+        android:text="Send Code" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:id="@+id/phoneNumberVerificationLayout"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@+id/verifyPhoneButton"
+        android:gravity="center">
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/phoneVerificationHolder"
+            android:layout_width="239dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/phoneVerificationCode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/phoneVerification"
+                android:inputType="phone" />
+        </android.support.design.widget.TextInputLayout>
+        <ProgressBar
+            android:id="@+id/phoneVerificationProgress"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <Button
+        android:id="@+id/verifyCodeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/phoneNumberVerificationLayout"
+        android:layout_centerHorizontal="true"
+        android:onClick="verifyCode"
+        android:text="Verify" />
+
+
 </RelativeLayout>

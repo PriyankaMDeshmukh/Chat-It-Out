@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.sdsuchatapp.chatitout.RegistrationActivity">
+
+
+    <TextView
+        android:id="@+id/registerHeading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="48dp"
+        android:text="@string/registerHeading" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/profile_image"
+        android:layout_width="116dp"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"
+        android:layout_height="116dp"
+        android:clickable="true"
+        android:onClick="changeDisplayImage"
+        android:src="@drawable/ic_person_black_48px"
+        android:layout_below="@id/registerHeading"
+        app:civ_border_width="2dp"
+        app:civ_border_color="#FF000000"/>
+    <TextView
+        android:id="@+id/changeDisplayImageInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/profile_image"
+        android:layout_centerHorizontal="true"
+        android:text="Click to change profile photo" />
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/displayNameHolder"
+        android:layout_width="239dp"
+        android:layout_marginTop="30dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/changeDisplayImageInfo"
+        android:layout_centerHorizontal="true">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/displayName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/displayName"
+            android:inputType="textPersonName" />
+    </android.support.design.widget.TextInputLayout>
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/displayNameHolder"
+        android:layout_centerHorizontal="true"
+        android:onClick="loginUser"
+        android:text="Login" />
+
+
+</RelativeLayout>
