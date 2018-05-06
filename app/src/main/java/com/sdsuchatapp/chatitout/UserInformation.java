@@ -8,11 +8,19 @@ public class UserInformation {
 
     String displayName;
     String profilePicture;
-    String profile_thumbnail;
+    String profileThumbnail;
+    String phoneNumber;
 
 
     public UserInformation() {
 
+    }
+
+    public UserInformation(String displayName, String profilePicture, String profileThumbnail, String phoneNumber) {
+        this.displayName = displayName;
+        this.profilePicture = profilePicture;
+        this.profileThumbnail = profileThumbnail;
+        this.phoneNumber = phoneNumber;
     }
 
     public String getDisplayName() {
@@ -32,10 +40,18 @@ public class UserInformation {
     }
 
     public String getProfile_thumbnail() {
-        return profile_thumbnail;
+        return profileThumbnail;
     }
 
-    public void setProfile_thumbnail(String profile_thumbnail) {
-        this.profile_thumbnail = profile_thumbnail;
+    public void setProfile_thumbnail(String profileThumbnail) {
+        this.profileThumbnail = profileThumbnail;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 }
