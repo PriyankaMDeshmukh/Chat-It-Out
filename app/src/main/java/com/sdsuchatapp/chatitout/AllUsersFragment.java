@@ -69,11 +69,15 @@ public class AllUsersFragment extends Fragment {
                         eachFriendDetails.setFirstName(userDetails.displayName);
                         eachFriendDetails.setProfileThumbnail(userDetails.profileThumbnail);
                         final String userId=getRef(position).getKey();
+                        final String displayName = userDetails.displayName;
+                        final String profileThumbnail = userDetails.profileThumbnail;
                         eachFriendDetails.itemView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View arg0) {
                                 Intent chatWindow = new Intent(refOfChatActicity, ChatWindowActivity.class);
                                 chatWindow.putExtra("userId",userId);
+                                chatWindow.putExtra("userName", displayName);
+                                chatWindow.putExtra("profileThumbnail", profileThumbnail);
                                 refOfChatActicity.startActivity(chatWindow);
                             } });
                     }
