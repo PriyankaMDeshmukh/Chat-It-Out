@@ -61,6 +61,10 @@ dependencies {
 
     compile 'id.zelory:compressor:2.1.0'
 
+    android.defaultConfig.vectorDrawables.useSupportLibrary = true
+
+
+
 
 }
 apply plugin: 'com.google.gms.google-services'
