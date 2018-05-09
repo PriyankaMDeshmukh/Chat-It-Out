@@ -17,7 +17,7 @@
         android:text="@string/registerHeading" />
 
     <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/profile_image"
+        android:id="@+id/userImage"
         android:layout_width="116dp"
         android:layout_height="116dp"
         android:layout_below="@id/registerHeading"
@@ -32,7 +32,7 @@
         android:id="@+id/changeDisplayImageInfo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/profile_image"
+        android:layout_below="@id/userImage"
         android:layout_centerHorizontal="true"
         android:text="Click to change profile photo" />
 
