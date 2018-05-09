@@ -1,15 +1,10 @@
 package com.sdsuchatapp.chatitout;
 
-import android.Manifest;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -31,7 +26,6 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
-import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -63,7 +57,7 @@ public class RegistrationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_registration);
         profilePictureStorage = FirebaseStorage.getInstance().getReference();
         displayNameInput = findViewById(R.id.displayName);
-        profilePictureView = findViewById(R.id.profile_image);
+        profilePictureView = findViewById(R.id.userImage);
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         Bundle bundle = this.getIntent().getExtras();
         HashMap<String,String> userData;
