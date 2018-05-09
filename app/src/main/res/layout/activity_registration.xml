@@ -16,24 +16,23 @@
         android:layout_marginTop="48dp"
         android:text="@string/registerHeading" />
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/profile_image"
+    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/userImage"
         android:layout_width="116dp"
-        android:layout_marginTop="20dp"
-        android:layout_centerHorizontal="true"
         android:layout_height="116dp"
+        android:layout_below="@id/registerHeading"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
         android:clickable="true"
         android:onClick="changeDisplayImage"
         android:src="@drawable/ic_person_black_48px"
-        android:layout_below="@id/registerHeading"
-        app:civ_border_width="2dp"
-        app:civ_border_color="#FF000000"/>
+        app:civ_border_color="#FF000000"
+        app:civ_border_width="2dp" />
     <TextView
         android:id="@+id/changeDisplayImageInfo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/profile_image"
+        android:layout_below="@id/userImage"
         android:layout_centerHorizontal="true"
         android:text="Click to change profile photo" />
 

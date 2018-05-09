@@ -16,6 +16,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions{
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
@@ -60,6 +64,35 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.71828'
 
     compile 'id.zelory:compressor:2.1.0'
+
+    android.defaultConfig.vectorDrawables.useSupportLibrary = true
+
+    //Room sql lite library
+    implementation "android.arch.lifecycle:common-java8:1.1.1"
+    // ViewModel and LiveData
+    implementation "android.arch.lifecycle:extensions:1.1.1"
+    // alternatively, just ViewModel
+    implementation "android.arch.lifecycle:viewmodel:1.1.1"
+    // alternatively, just LiveData
+    implementation "android.arch.lifecycle:livedata:1.1.1"
+
+    // Room (use 1.1.0-rc1 for latest version)
+    implementation "android.arch.persistence.room:runtime:1.1.0-rc1"
+    annotationProcessor "android.arch.persistence.room:compiler:1.1.0-rc1"
+
+    // Paging
+    implementation "android.arch.paging:runtime:1.0.0-rc1"
+
+    // Test helpers for LiveData
+    testImplementation "android.arch.core:core-testing:1.1.1"
+
+    // Test helpers for Room
+    testImplementation "android.arch.persistence.room:testing:1.0.0"
+
+    // Guava support for Room
+    implementation "android.arch.persistence.room:guava:1.1.0-rc1"
+
+
 
 
 }

@@ -84,6 +84,8 @@ public class AllUsersFragment extends Fragment {
                     file.close();
                 } catch (Exception noFile) {
                     Log.e("Exception", "File write failed: " + noFile.toString());
+
+           
                 }
             }
 
