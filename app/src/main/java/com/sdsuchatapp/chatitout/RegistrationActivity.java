@@ -35,8 +35,10 @@ import java.util.Map;
 import de.hdodenhof.circleimageview.CircleImageView;
 import id.zelory.compressor.Compressor;
 
-//Reference for Image cropping: http://square.github.io/picasso/
-//Picasso is a cropping library for android which we used for the image feature.
+//Reference for Image Loading: http://square.github.io/picasso/
+//Picasso is a image library for android which we used for the image feature.
+//https://github.com/ArthurHub/Android-Image-Cropper
+//This is the cropping library
 public class RegistrationActivity extends AppCompatActivity {
 
     private final String TAG = "RegistrationActivity";
