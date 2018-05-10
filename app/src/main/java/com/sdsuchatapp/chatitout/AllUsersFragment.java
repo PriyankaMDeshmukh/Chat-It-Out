@@ -1,5 +1,6 @@
 package com.sdsuchatapp.chatitout;
 
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -36,14 +37,20 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class AllUsersFragment extends Fragment {
     public final static int MY_PERMISSIONS_REQUEST_READ_CONTACTS=100;
+    private ProgressDialog progressDialog;
     ArrayList<String> listAllContacts;
     private RecyclerView userLists; // RecyclerView is used to get a list of scrollable items. An alternative to ListView
     static Context refOfChatActivity;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View view= inflater.inflate(R.layout.fragment_all_users, container, false);
         refOfChatActivity =getContext(); //needed to implement onclickListener on ViewHolder
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setTitle("Syncing Contacts");
+        progressDialog.setMessage("Please wait while Chat-It-Out syncs your contacts to the system");
+        progressDialog.setCanceledOnTouchOutside(false);
         userLists= view.findViewById(R.id.userLists);
         userLists.setLayoutManager(new LinearLayoutManager(getActivity())); //allows custom layout unlike ListView
         return view;
@@ -72,25 +79,22 @@ public class AllUsersFragment extends Fragment {
                                            String permissions[], int[] grantResults) {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_READ_CONTACTS: {
-                // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
                     showAllUsers();
                 } else {
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
+
                 }
                 return;
             }
 
-            // other 'case' lines to check for other
-            // permissions this app might request.
         }
     }
 
     private void showAllUsers() {
+
+
+
         try {
             InputStream file = new BufferedInputStream(getContext().openFileInput("listAllContacts"));
             byte[] data = new byte[file.available()];
@@ -101,6 +105,13 @@ public class AllUsersFragment extends Fragment {
 
         }
         if(listAllContacts==null) {
+
+            if(!progressDialog.isShowing())
+            {
+                progressDialog.show();
+
+            }
+
             listAllContacts = contactRegisteredForApp();
             try {
                 OutputStream file = new BufferedOutputStream(getContext().openFileOutput("listAllContacts", MODE_PRIVATE));
@@ -119,6 +130,8 @@ public class AllUsersFragment extends Fragment {
             @Override
             protected void onBindViewHolder(@NonNull IndividualUserInfo eachFriendDetails, int position, @NonNull UserInformation userDetails) {
                 if(listAllContacts.contains(userDetails.phoneNumber)){
+             //       if(progressDialog.isShowing())
+               //         progressDialog.dismiss();
                     eachFriendDetails.setFirstName(userDetails.displayName);
                     eachFriendDetails.setProfileThumbnail(userDetails.profileThumbnail);
                     final String userId=getRef(position).getKey();
@@ -149,10 +162,12 @@ public class AllUsersFragment extends Fragment {
         };
         userLists.setAdapter(getAllFriendsList);
         getAllFriendsList.startListening();
+        if(progressDialog.isShowing())
+            progressDialog.dismiss();
     }
 
     public ArrayList<String> contactRegisteredForApp(){
-        ArrayList<String> listAllContacts = new ArrayList<String>();
+        ArrayList<String> listAllContacts = new ArrayList();
         ContentResolver cr = getActivity().getContentResolver();
         Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI,
                 null, null, null, null);
@@ -185,8 +200,8 @@ public class AllUsersFragment extends Fragment {
             mView=view;
         }
         public void setFirstName(String firstName) {
-            TextView userfirstName =mView.findViewById(R.id.userName);
-            userfirstName.setText(firstName);
+            TextView userFirstName =mView.findViewById(R.id.userName);
+            userFirstName.setText(firstName);
         }
         public void setProfileThumbnail(String profileThumbnail) {
             CircleImageView profileThumbnailImage =mView.findViewById(R.id.userImage);
