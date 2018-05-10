@@ -49,6 +49,7 @@ public class ChatWindowActivity extends AppCompatActivity {
     private EditText chatMessage;
     private RecyclerView messagesListView;
 
+    private String TAG = "ChatWindowActivity";
     private final List<MessageBean> messageList = new ArrayList<>();
     private LinearLayoutManager linearLayoutManager;
     private MessageAdapter messageAdapter;
@@ -62,14 +63,14 @@ public class ChatWindowActivity extends AppCompatActivity {
     private int position = 0;
     private String firstMessageKey = "";
     private String previousMessageKey = "";
-    String currentUserName="Chat It Out";
+    String currentUserName=getString(R.string.defaultUserName);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_window);
-        String userId =getIntent().getStringExtra("userId");
-        String userName = getIntent().getStringExtra("userName");
-        String profileThumbnail = getIntent().getStringExtra("profileThumbnail");
+        String userId =getIntent().getStringExtra(getString(R.string.userId));
+        String userName = getIntent().getStringExtra(getString(R.string.userName));
+        String profileThumbnail = getIntent().getStringExtra(getString(R.string.usersThumbnail));
         chatWithUserId = userId;
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -92,7 +93,7 @@ public class ChatWindowActivity extends AppCompatActivity {
 
 
         database = FirebaseDatabase.getInstance().getReference();
-        messageNotification = FirebaseDatabase.getInstance().getReference().child("MessageNotifications");
+        messageNotification = FirebaseDatabase.getInstance().getReference().child(getString(R.string.firebaseMessageNotif));
         auth = FirebaseAuth.getInstance();
         currentUserId = auth.getCurrentUser().getUid();
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -102,27 +103,27 @@ public class ChatWindowActivity extends AppCompatActivity {
         displayName = findViewById(R.id.userName);
         profileThumbnailView = findViewById(R.id.chatUserThumbnail);
         displayName.setText(userName);
-        if(!profileThumbnail.equalsIgnoreCase("default")){
+        if(!profileThumbnail.equalsIgnoreCase(getString(R.string.defaultDbValues))){
             Picasso.get().load(profileThumbnail).placeholder(R.drawable.ic_person_black_48px).into(profileThumbnailView);
 
         }
 
-        database.child("Chat").child(currentUserId).addValueEventListener(new ValueEventListener() {
+        database.child(getString(R.string.firebaseChat)).child(currentUserId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if ( !dataSnapshot.hasChild(chatWithUserId)){
                     HashMap chatDetails = new HashMap();
-                    chatDetails.put("chatSeen", false);
-                    chatDetails.put("timestamp", ServerValue.TIMESTAMP);
+                    chatDetails.put(getString(R.string.chatSeen), false);
+                    chatDetails.put(getString(R.string.chatTimestamp), ServerValue.TIMESTAMP);
 
                     //add chatDetails to both users map
                     HashMap chatUsers = new HashMap();
-                    chatUsers.put("Chat/"+currentUserId+"/"+chatWithUserId, chatDetails);
-                    chatUsers.put("Chat/"+chatWithUserId+"/"+chatWithUserId, chatDetails);
+                    chatUsers.put(getString(R.string.firebaseChatPath)+currentUserId+"/"+chatWithUserId, chatDetails);
+                    chatUsers.put(getString(R.string.firebaseChatPath)+chatWithUserId+"/"+chatWithUserId, chatDetails);
 
                     database.updateChildren(chatUsers, (databaseError, databaseReference) -> {
                         if(databaseError != null){
-                            Log.d("ChatWindowActivity", databaseError.getMessage().toString());
+                            Log.d(TAG, databaseError.getMessage().toString());
                         }
                     });
 
@@ -137,32 +138,19 @@ public class ChatWindowActivity extends AppCompatActivity {
         });
 
         //on click listeners for chat message buttons
-        chatSendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sendMessage();
-            }
+        chatSendButton.setOnClickListener(view -> sendMessage());
 
-
-        });
-
-        profileThumbnailView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent settingsIntent = new Intent(ChatWindowActivity.this, SettingsActivity.class);
-                startActivity(settingsIntent);
-            }
+        profileThumbnailView.setOnClickListener(view -> {
+            Intent settingsIntent = new Intent(ChatWindowActivity.this, SettingsActivity.class);
+            startActivity(settingsIntent);
         });
 
 
 
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                currentlyLoaded++;
-                position = 0;
-                showMoreMessages();
-            }
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            currentlyLoaded++;
+            position = 0;
+            showMoreMessages();
         });
     }
 
@@ -179,7 +167,7 @@ public class ChatWindowActivity extends AppCompatActivity {
     }
 
     private void showMoreMessages() {
-        DatabaseReference messageReference = database.child("messages").child(currentUserId).child(chatWithUserId);
+        DatabaseReference messageReference = database.child(getString(R.string.firebaseMessages)).child(currentUserId).child(chatWithUserId);
 
         Query messageQuery = messageReference.orderByKey().endAt(firstMessageKey).limitToLast(totalLoad);
 
@@ -204,7 +192,7 @@ public class ChatWindowActivity extends AppCompatActivity {
 
 
                 messageAdapter.notifyDataSetChanged();
-                linearLayoutManager.scrollToPositionWithOffset(10,0);
+                linearLayoutManager.scrollToPositionWithOffset(totalLoad,0);
                 swipeRefreshLayout.setRefreshing(false);
 
             }
@@ -234,7 +222,7 @@ public class ChatWindowActivity extends AppCompatActivity {
 
     private void showAllMessages() {
 
-        DatabaseReference messageReference = database.child("messages").child(currentUserId).child(chatWithUserId);
+        DatabaseReference messageReference = database.child(getString(R.string.firebaseMessages)).child(currentUserId).child(chatWithUserId);
 
         Query messageQuery = messageReference.limitToLast(currentlyLoaded*totalLoad);
 
@@ -288,14 +276,14 @@ public class ChatWindowActivity extends AppCompatActivity {
             //Message will be temporarily stored in Chat-It-Out Firebase Server and permanently in users sql-lite database
             //Whatsapp does something on the same lines to save storage space so we are trying to achieve something similar
 
-            DatabaseReference userMessage = database.child("messages").child(currentUserId).child(chatWithUserId).push();
+            DatabaseReference userMessage = database.child(getString(R.string.firebaseMessages)).child(currentUserId).child(chatWithUserId).push();
 
 
             database.addListenerForSingleValueEvent(new ValueEventListener(){
 
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot){
-                    currentUserName = dataSnapshot.child("Users").child(currentUserId).child("displayName").getValue(String.class); //This is a1
+                    currentUserName = dataSnapshot.child(getString(R.string.firebaseDatabaseUsers)).child(currentUserId).child(getString(R.string.usersName)).getValue(String.class); //This is a1
                 }
 
                 @Override
@@ -307,18 +295,18 @@ public class ChatWindowActivity extends AppCompatActivity {
 
 
             //Store messages in Firebase for both the sender and reciever
-            String senderReference = "messages/"+currentUserId+"/"+chatWithUserId;
-            String recieverReference = "messages/"+chatWithUserId+"/"+currentUserId;
+            String senderReference = getString(R.string.firebaseMessagesPath)+currentUserId+"/"+chatWithUserId;
+            String recieverReference = getString(R.string.firebaseMessagesPath)+chatWithUserId+"/"+currentUserId;
 
             String id = userMessage.getKey();
 
             //add the message to be stored, in a map along with its details
             HashMap messageMap = new HashMap();
-            messageMap.put("message", message);
-            messageMap.put("seen",false);
-            messageMap.put("type", "text");
-            messageMap.put("time", ServerValue.TIMESTAMP);
-            messageMap.put("from", currentUserId);
+            messageMap.put(getString(R.string.messageKey), message);
+            messageMap.put(getString(R.string.seenKey),false);
+            messageMap.put(getString(R.string.typeKey), getString(R.string.type));
+            messageMap.put(getString(R.string.timeKey), ServerValue.TIMESTAMP);
+            messageMap.put(getString(R.string.fromKey), currentUserId);
 
             HashMap userMessageMap = new HashMap();
             userMessageMap.put(senderReference+"/"+id, messageMap);
@@ -329,18 +317,15 @@ public class ChatWindowActivity extends AppCompatActivity {
             //now add this to firebase database
             database.updateChildren(userMessageMap, (databaseError, databaseReference) -> {
                 if(databaseError != null){
-                    Log.d("ChatWindowActivity", databaseError.getMessage().toString());
+                    Log.d(TAG, databaseError.getMessage().toString());
                 }
             });
             HashMap<String,String> notificationMessage =new HashMap<>();
-            notificationMessage.put(currentUserName+"ChatItOut"+message,currentUserId);
+            notificationMessage.put(currentUserName+getString(R.string.app_name)+message,currentUserId);
 
 
-            messageNotification.child(chatWithUserId).push().setValue(notificationMessage).addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
+            messageNotification.child(chatWithUserId).push().setValue(notificationMessage).addOnSuccessListener(aVoid -> {
 
-                            }
             }
 
             );

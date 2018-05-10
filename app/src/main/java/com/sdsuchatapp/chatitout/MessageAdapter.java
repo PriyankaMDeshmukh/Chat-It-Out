@@ -1,18 +1,11 @@
 package com.sdsuchatapp.chatitout;
 
-import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.RecyclerView;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -64,14 +57,14 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         MessageBean currentMessage = messageList.get(position);
         String fromUserId = currentMessage.getFrom();
         if(fromUserId.equalsIgnoreCase(currentUserId)){
-            holder.userMessage.setBackgroundColor(Color.WHITE);
+            holder.userMessage.setBackgroundResource(R.drawable.message_background_sent);
             holder.userMessage.setTextColor(Color.BLACK);
 
 
 
         }
         else{
-            holder.userMessage.setBackgroundResource(R.drawable.message_background);
+            holder.userMessage.setBackgroundResource(R.drawable.message_background_received);
             holder.userMessage.setTextColor(Color.WHITE);
 
 

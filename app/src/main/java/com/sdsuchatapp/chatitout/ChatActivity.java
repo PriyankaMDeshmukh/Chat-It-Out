@@ -24,15 +24,12 @@ import java.util.List;
 public class ChatActivity extends AppCompatActivity {
 
     private ViewPager mViewPager;
-    private PageAdapter tabbedPageAdapter;
     private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-
-        tabbedPageAdapter=new PageAdapter(getSupportFragmentManager());
         mViewPager= findViewById(R.id.container);
         setUpViewPager(mViewPager);
         TabLayout tabLayout= findViewById(R.id.tabs);
@@ -47,16 +44,15 @@ public class ChatActivity extends AppCompatActivity {
     }
     private void setUpViewPager(ViewPager viewPager){
         PageAdapter tabbedPage=new PageAdapter(getSupportFragmentManager());
-        tabbedPage.addFragment(new AllChatsFragment(),"Chats");
-        tabbedPage.addFragment(new AllUsersFragment(),"Friends");
-        tabbedPage.addFragment(new ProfileFragment(),"Profile");
+        tabbedPage.addFragment(new AllChatsFragment(),getString(R.string.chatsHeader));
+        tabbedPage.addFragment(new AllUsersFragment(),getString(R.string.friendsHeader));
+        tabbedPage.addFragment(new ProfileFragment(),getString(R.string.profileHeader));
         viewPager.setAdapter(tabbedPage);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_chat, menu);
         return true;
     }

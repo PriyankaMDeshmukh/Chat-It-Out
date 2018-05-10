@@ -16,7 +16,61 @@
     <string name="displayName">Enter Display Name</string>
     <string name="password">Password</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="action_logout">Logout</string>
+    <string name="loginProgressTitle">Authenticating User</string>
+    <string name="loginProgressMessage">Please wait while Chat-It-Out verifies you</string>
+    <string name="loginVerificationSuccess">onVerificationCompleted:</string>
+    <string name="loginVerificationFailed">onVerificationFailed</string>
+    <string name="invalidPhone">Invalid phone number.</string>
+    <string name="qoutaExceeded">Quota exceeded.</string>
+    <string name="codeSentMsg">onCodeSent:</string>
+    <string name="signInSuccess">signInWithCredential:success</string>
+    <string name="signInFailiure">signInWithCredential:failure</string>
+    <string name="invalidCode">Invalid code.</string>
+    <string name="firebaseDatabaseUsers">Users</string>
+    <string name="usersName">displayName</string>
+    <string name="usersThumbnail">profileThumbnail</string>
+    <string name="usersPicture">profilePicture</string>
+    <string name="usersPhone">phoneNumber</string>
+    <string name="usersUid">uid</string>
+    <string name="databaseException">Failed to read value.</string>
+    <string name="defaultDbValues">default</string>
+    <string name="usersToken">token</string>
+    <string name="phoneNumberEmpty">Please enter phone number</string>
+    <string name="verificationCodeEmpty">Please enter code</string>
+    <string name="imageProgressTitle">Uploading Image</string>
+    <string name="imageProgressMessage">Please wait while the image is being uploaded</string>
+    <string name="firebaseStoragePictures">profilePictures</string>
+    <string name="pictureExtension">.jpg</string>
+    <string name="firebaseStorageThumbnail">thumbnail</string>
+    <string name="imageUploadSuccess">Successfully uploaded picture</string>
+    <string name="thumbnailUploadError">Error in uploading thumbnail</string>
+    <string name="imageUploadError">Error in uploading picture</string>
+    <string name="displayNameEmpty">Please Enter Display Name</string>
+    <string name="chatsHeader">Chats</string>
+    <string name="friendsHeader">Friends</string>
+    <string name="profileHeader">Profile</string>
+    <string name="defaultUserName">Chat It Out</string>
+    <string name="userId">userId</string>
+    <string name="userName">userName</string>
+    <string name="firebaseMessageNotif">MessageNotifications</string>
+    <string name="firebaseChat">Chat</string>
+    <string name="chatSeen">chatSeen</string>
+    <string name="chatTimestamp">timestamp</string>
+    <string name="firebaseChatPath">Chat/</string>
+    <string name="firebaseMessages">messages</string>
+    <string name="firebaseMessagesPath">messages/</string>
+    <string name="messageKey">message</string>
+    <string name="seenKey">seen</string>
+    <string name="typeKey">type</string>
+    <string name="timeKey">time</string>
+    <string name="fromKey">from</string>
+    <string name="type">text</string>
+    <string name="contactsSyncProgressTitle">Syncing Contacts</string>
+    <string name="contactsSyncProgressMessage">Please wait while Chat-It-Out syncs your contacts to the system</string>
+    <string name="allContactsFile">listAllContacts</string>
+    <string name="writeFail">File write failed:</string>
+
+
 </resources>
