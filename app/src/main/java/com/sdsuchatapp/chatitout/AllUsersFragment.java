@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.squareup.picasso.Picasso;
@@ -62,13 +63,10 @@ public class AllUsersFragment extends Fragment {
         if (ContextCompat.checkSelfPermission(getActivity(),
                 android.Manifest.permission.READ_CONTACTS)
                 != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-                    android.Manifest.permission.READ_CONTACTS)) {
 
-            } else {
                 requestPermissions(new String[]{android.Manifest.permission.READ_CONTACTS},
                         MY_PERMISSIONS_REQUEST_READ_CONTACTS);
-            }
+
         }
         else{
 
@@ -84,6 +82,10 @@ public class AllUsersFragment extends Fragment {
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     showAllUsers();
                 } else {
+                    FirebaseAuth.getInstance().signOut();
+                    Intent startActivity = new Intent(getActivity(), LoginActivity.class);
+                    startActivity(startActivity);
+                    getActivity().finish();
 
                 }
                 return;
