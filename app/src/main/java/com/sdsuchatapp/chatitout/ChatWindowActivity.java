@@ -54,6 +54,10 @@ public class ChatWindowActivity extends AppCompatActivity {
     private int totalLoad = 10;
     private int currentlyLoaded = 1;
 
+    private int position = 0;
+    private String firstMessageKey = "";
+    private String previousMessageKey = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -140,24 +144,89 @@ public class ChatWindowActivity extends AppCompatActivity {
             @Override
             public void onRefresh() {
                 currentlyLoaded++;
-                showAllMessages();
+                position = 0;
+                showMoreMessages();
             }
         });
+    }
+
+    private void showMoreMessages() {
+        DatabaseReference messageReference = database.child("messages").child(currentUserId).child(chatWithUserId);
+
+        Query messageQuery = messageReference.orderByKey().endAt(firstMessageKey).limitToLast(totalLoad);
+
+        messageQuery.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                MessageBean message = dataSnapshot.getValue(MessageBean.class);
+                messageList.add(position++,message);
+
+                if(!previousMessageKey.equalsIgnoreCase(firstMessageKey)){
+                    messageList.add(position++,message);
+                }
+                else
+                {
+                    previousMessageKey = firstMessageKey;
+                }
+                if(position == 1){
+                    firstMessageKey = dataSnapshot.getKey();
+
+                }
+
+
+
+                messageAdapter.notifyDataSetChanged();
+                linearLayoutManager.scrollToPositionWithOffset(10,0);
+                swipeRefreshLayout.setRefreshing(false);
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
     private void showAllMessages() {
 
         DatabaseReference messageReference = database.child("messages").child(currentUserId).child(chatWithUserId);
 
-        Query messageQuery = messageReference.limitToLast(currentlyLoaded+totalLoad);
+        Query messageQuery = messageReference.limitToLast(currentlyLoaded*totalLoad);
 
         messageQuery.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 MessageBean message = dataSnapshot.getValue(MessageBean.class);
+                position++;
+
+                //When loading the message, get key of first in the list so that after scrolling
+                //can keep it at the last
+                if(position == 1){
+                    firstMessageKey = dataSnapshot.getKey();
+                    previousMessageKey = firstMessageKey;
+
+                }
                 messageList.add(message);
                 messageAdapter.notifyDataSetChanged();
                 messagesListView.scrollToPosition(messageList.size()-1);
+                swipeRefreshLayout.setRefreshing(false);
 
             }
 
