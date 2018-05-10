@@ -2,7 +2,6 @@ package com.sdsuchatapp.chatitout;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -17,12 +16,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 
-import com.firebase.ui.storage.images.FirebaseImageLoader;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.FirebaseTooManyRequestsException;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseUser;
@@ -47,6 +42,7 @@ public class LoginActivity extends AppCompatActivity {
     private static final int STATE_SIGNIN_FAILED = 2;
     private static final int STATE_SIGNIN_SUCCESS = 3;
     private static final int STATE_ALREADY_LOGGED_IN = 4;
+    private int timeoutDuration = 60;
     private static final String TAG = "LoginActivity";
     private ProgressDialog progressDialog;
 
@@ -94,8 +90,8 @@ public class LoginActivity extends AppCompatActivity {
 
 
         progressDialog = new ProgressDialog(this);
-        progressDialog.setTitle("Authenticating User");
-        progressDialog.setMessage("Please wait while Chat-It-Out verifies you");
+        progressDialog.setTitle(getString(R.string.loginProgressTitle));
+        progressDialog.setMessage(getString(R.string.loginProgressMessage));
         progressDialog.setCanceledOnTouchOutside(false);
 
         phoneNumber = findViewById(R.id.phoneNumber);
@@ -121,7 +117,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onVerificationCompleted(PhoneAuthCredential credential) {
 
                 progressDialog.show();
-                Log.d(TAG, "onVerificationCompleted:" + credential);
+                Log.d(TAG, getString(R.string.loginVerificationSuccess) + credential);
                 phoneProgressBar.setVisibility(View.INVISIBLE);
                 verificationInProgress = false;
                 signInWithPhoneAuthCredential(credential);
@@ -130,18 +126,18 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onVerificationFailed(FirebaseException e) {
 
-                Log.w(TAG, "onVerificationFailed", e);
+                Log.w(TAG, getString(R.string.loginVerificationFailed), e);
                 phoneProgressBar.setVisibility(View.INVISIBLE);
                 verificationInProgress = false;
 
 
                 if (e instanceof FirebaseAuthInvalidCredentialsException) {
 
-                    phoneNumber.setError("Invalid phone number.");
+                    phoneNumber.setError(getString(R.string.invalidPhone));
 
                 } else if (e instanceof FirebaseTooManyRequestsException) {
 
-                    Snackbar.make(findViewById(android.R.id.content), "Quota exceeded.",
+                    Snackbar.make(findViewById(android.R.id.content), R.string.qoutaExceeded,
                             Snackbar.LENGTH_SHORT).show();
 
                 }
@@ -155,7 +151,7 @@ public class LoginActivity extends AppCompatActivity {
                 // The SMS verification code has been sent to the provided phone number, we
                 // now need to ask the user to enter the code and then construct a credential
                 // by combining the code with a verification ID.
-                Log.d(TAG, "onCodeSent:" + verification);
+                Log.d(TAG, getString(R.string.codeSentMsg) + verification);
 
                 // Save verification ID and resending token so we can use them later
 
@@ -174,7 +170,7 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         // Sign in success, update UI with the signed-in user's information
-                        Log.d(TAG, "signInWithCredential:success");
+                        Log.d(TAG, getString(R.string.signInSuccess));
                         FirebaseUser user = task.getResult().getUser();
                         updateUI(STATE_SIGNIN_SUCCESS, user);
 
@@ -183,10 +179,10 @@ public class LoginActivity extends AppCompatActivity {
 
                     } else {
                         // Sign in failed, display a message and update the UI
-                        Log.w(TAG, "signInWithCredential:failure", task.getException());
+                        Log.w(TAG, getString(R.string.signInFailiure), task.getException());
                         if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
                             // The verification code entered was invalid
-                            phoneVerificationCode.setError("Invalid code.");
+                            phoneVerificationCode.setError(getString(R.string.invalidCode));
                         }
                         updateUI(STATE_SIGNIN_FAILED);
                     }
@@ -240,7 +236,7 @@ public class LoginActivity extends AppCompatActivity {
                 //Go to Main Activity
                 final String uid = user.getUid();
                 if(uid!=null) {
-                    database = FirebaseDatabase.getInstance().getReference().child("Users");
+                    database = FirebaseDatabase.getInstance().getReference().child(getString(R.string.firebaseDatabaseUsers));
 
                     //check if uid in database else enter uid
                     // Read from the database
@@ -252,18 +248,18 @@ public class LoginActivity extends AppCompatActivity {
                                 database.addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
-                                        String name = dataSnapshot.child("displayName").getValue().toString();
-                                        String profileThumbnail = dataSnapshot.child("profileThumbnail").getValue().toString();
-                                        String profilePicture = dataSnapshot.child("profilePicture").getValue().toString();
-                                        String phoneNumber = dataSnapshot.child("phoneNumber").getValue().toString();
+                                        String name = dataSnapshot.child(getString(R.string.usersName)).getValue().toString();
+                                        String profileThumbnail = dataSnapshot.child(getString(R.string.usersThumbnail)).getValue().toString();
+                                        String profilePicture = dataSnapshot.child(getString(R.string.usersPicture)).getValue().toString();
+                                        String phoneNumber = dataSnapshot.child(getString(R.string.usersPhone)).getValue().toString();
                                         Intent go = new Intent(getApplicationContext(),RegistrationActivity.class);
                                         Bundle bundle = new Bundle();
                                         HashMap<String,String> userData = new HashMap<>();
-                                        userData.put("displayName", name);
-                                        userData.put("profileThumbnail", profileThumbnail);
-                                        userData.put("profilePicture", profilePicture);
-                                        userData.put("phoneNumber",phoneNumber);
-                                        userData.put("uid",uid);
+                                        userData.put(getString(R.string.usersName), name);
+                                        userData.put(getString(R.string.usersThumbnail), profileThumbnail);
+                                        userData.put(getString(R.string.usersPicture), profilePicture);
+                                        userData.put(getString(R.string.usersPhone),phoneNumber);
+                                        userData.put(getString(R.string.usersUid),uid);
                                         bundle.putSerializable("HashMap", userData);
                                         go.putExtras(bundle);
                                         progressDialog.dismiss();
@@ -274,19 +270,19 @@ public class LoginActivity extends AppCompatActivity {
                                     @Override
                                     public void onCancelled(DatabaseError databaseError) {
                                         progressDialog.dismiss();
-                                        Log.w(TAG, "Failed to read value.", databaseError.toException());
+                                        Log.w(TAG, getString(R.string.databaseException), databaseError.toException());
                                     }
                                 });
                             } else {
                                 database = database.child(uid);
                                 String userPhoneToken = FirebaseInstanceId.getInstance().getToken();
                                 final HashMap<String, String> userData = new HashMap<>();
-                                userData.put("displayName", "");
-                                userData.put("profileThumbnail", "default");
-                                userData.put("profilePicture", "default");
-                                userData.put("uid",uid);
-                                userData.put("phoneNumber",phoneNumber.getText().toString());
-                                userData.put("token",userPhoneToken);
+                                userData.put(getString(R.string.usersName), "");
+                                userData.put(getString(R.string.usersThumbnail), getString(R.string.defaultDbValues));
+                                userData.put(getString(R.string.usersPicture), getString(R.string.defaultDbValues));
+                                userData.put(getString(R.string.usersUid),uid);
+                                userData.put(getString(R.string.usersPhone),phoneNumber.getText().toString());
+                                userData.put(getString(R.string.usersToken),userPhoneToken);
                                 database.setValue(userData).addOnCompleteListener(task -> {
                                     if (task.isSuccessful()) {
                                         Intent go1 = new Intent(getApplicationContext(),RegistrationActivity.class);
@@ -304,7 +300,7 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void onCancelled(DatabaseError error) {
                             progressDialog.dismiss();
-                            Log.w(TAG, "Failed to read value.", error.toException());
+                            Log.w(TAG, getString(R.string.databaseException), error.toException());
                         }
                     });
                 }
@@ -317,7 +313,7 @@ public class LoginActivity extends AppCompatActivity {
     private boolean validatePhoneNumber() {
         String phone = phoneNumber.getText().toString();
         if (TextUtils.isEmpty(phone)) {
-            phoneNumber.setError("Please enter phone number");
+            phoneNumber.setError(getString(R.string.phoneNumberEmpty));
             return false;
         }
 
@@ -346,7 +342,7 @@ public class LoginActivity extends AppCompatActivity {
 
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
                 phoneNumber,
-                60,
+                timeoutDuration,
                 TimeUnit.SECONDS,
                 this,
                 callbacks);
@@ -366,7 +362,7 @@ public class LoginActivity extends AppCompatActivity {
             signInWithPhoneAuthCredential(credential);
         }
         else{
-            phoneVerificationCode.setError("Please enter code");
+            phoneVerificationCode.setError(getString(R.string.verificationCodeEmpty));
         }
     }
 }

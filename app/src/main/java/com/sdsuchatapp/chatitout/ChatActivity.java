@@ -44,9 +44,9 @@ public class ChatActivity extends AppCompatActivity {
     }
     private void setUpViewPager(ViewPager viewPager){
         PageAdapter tabbedPage=new PageAdapter(getSupportFragmentManager());
-        tabbedPage.addFragment(new AllChatsFragment(),"Chats");
-        tabbedPage.addFragment(new AllUsersFragment(),"Friends");
-        tabbedPage.addFragment(new ProfileFragment(),"Profile");
+        tabbedPage.addFragment(new AllChatsFragment(),getString(R.string.chatsHeader));
+        tabbedPage.addFragment(new AllUsersFragment(),getString(R.string.friendsHeader));
+        tabbedPage.addFragment(new ProfileFragment(),getString(R.string.profileHeader));
         viewPager.setAdapter(tabbedPage);
     }
 

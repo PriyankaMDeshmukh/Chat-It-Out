@@ -37,6 +37,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class AllUsersFragment extends Fragment {
     public final static int MY_PERMISSIONS_REQUEST_READ_CONTACTS=100;
+    private String TAG = "AllUsersFragment";
     private ProgressDialog progressDialog;
     ArrayList<String> listAllContacts;
     private RecyclerView userLists; // RecyclerView is used to get a list of scrollable items. An alternative to ListView
@@ -48,8 +49,8 @@ public class AllUsersFragment extends Fragment {
         View view= inflater.inflate(R.layout.fragment_all_users, container, false);
         refOfChatActivity =getContext(); //needed to implement onclickListener on ViewHolder
         progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setTitle("Syncing Contacts");
-        progressDialog.setMessage("Please wait while Chat-It-Out syncs your contacts to the system");
+        progressDialog.setTitle(getString(R.string.contactsSyncProgressTitle));
+        progressDialog.setMessage(getString(R.string.contactsSyncProgressMessage));
         progressDialog.setCanceledOnTouchOutside(false);
         userLists= view.findViewById(R.id.userLists);
         userLists.setLayoutManager(new LinearLayoutManager(getActivity())); //allows custom layout unlike ListView
@@ -96,7 +97,7 @@ public class AllUsersFragment extends Fragment {
 
 
         try {
-            InputStream file = new BufferedInputStream(getContext().openFileInput("listAllContacts"));
+            InputStream file = new BufferedInputStream(getContext().openFileInput(getString(R.string.allContactsFile)));
             byte[] data = new byte[file.available()];
             file.read(data, 0, file.available());
             listAllContacts = new ArrayList(Arrays.asList(new String(data).replace("[","").replace("]","").split("\\s*,\\s*")));
@@ -114,15 +115,15 @@ public class AllUsersFragment extends Fragment {
 
             listAllContacts = contactRegisteredForApp();
             try {
-                OutputStream file = new BufferedOutputStream(getContext().openFileOutput("listAllContacts", MODE_PRIVATE));
+                OutputStream file = new BufferedOutputStream(getContext().openFileOutput(getString(R.string.allContactsFile), MODE_PRIVATE));
                 file.write(listAllContacts.toString().getBytes());
                 file.close();
             } catch (Exception noFile) {
-                Log.e("Exception", "File write failed: " + noFile.toString());
+                Log.e(TAG, getString(R.string.writeFail) + noFile.toString());
             }
         }
 
-        Query getAllFriendsData = FirebaseDatabase.getInstance().getReference().child("Users");
+        Query getAllFriendsData = FirebaseDatabase.getInstance().getReference().child(getString(R.string.firebaseDatabaseUsers));
         FirebaseRecyclerOptions<UserInformation> options = new FirebaseRecyclerOptions.Builder<UserInformation>()
                 .setQuery(getAllFriendsData, UserInformation.class)
                 .build();
@@ -130,22 +131,19 @@ public class AllUsersFragment extends Fragment {
             @Override
             protected void onBindViewHolder(@NonNull IndividualUserInfo eachFriendDetails, int position, @NonNull UserInformation userDetails) {
                 if(listAllContacts.contains(userDetails.phoneNumber)){
-             //       if(progressDialog.isShowing())
-               //         progressDialog.dismiss();
+
                     eachFriendDetails.setFirstName(userDetails.displayName);
                     eachFriendDetails.setProfileThumbnail(userDetails.profileThumbnail);
                     final String userId=getRef(position).getKey();
                     final String displayName = userDetails.displayName;
                     final String profileThumbnail = userDetails.profileThumbnail;
-                    eachFriendDetails.itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View arg0) {
-                            Intent chatWindow = new Intent(refOfChatActivity, ChatWindowActivity.class);
-                            chatWindow.putExtra("userId",userId);
-                            chatWindow.putExtra("userName",displayName);
-                            chatWindow.putExtra("profileThumbnail",profileThumbnail);
-                            refOfChatActivity.startActivity(chatWindow);
-                        } });
+                    eachFriendDetails.itemView.setOnClickListener(arg0 -> {
+                        Intent chatWindow = new Intent(refOfChatActivity, ChatWindowActivity.class);
+                        chatWindow.putExtra(getString(R.string.userId),userId);
+                        chatWindow.putExtra(getString(R.string.userName),displayName);
+                        chatWindow.putExtra(getString(R.string.usersThumbnail),profileThumbnail);
+                        refOfChatActivity.startActivity(chatWindow);
+                    });
                 }
                 else{
                     eachFriendDetails.itemView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
