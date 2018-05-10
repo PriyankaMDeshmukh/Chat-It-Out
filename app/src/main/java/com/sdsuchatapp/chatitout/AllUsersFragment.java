@@ -38,13 +38,13 @@ public class AllUsersFragment extends Fragment {
     public final static int MY_PERMISSIONS_REQUEST_READ_CONTACTS=100;
     ArrayList<String> listAllContacts;
     private RecyclerView userLists; // RecyclerView is used to get a list of scrollable items. An alternative to ListView
-    static Context refOfChatActicity;
+    static Context refOfChatActivity;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view= inflater.inflate(R.layout.fragment_all_users, container, false);
-        refOfChatActicity=getContext(); //needed to implement onclickListener on ViewHolder
-        userLists=(RecyclerView) view.findViewById(R.id.userLists);
+        refOfChatActivity =getContext(); //needed to implement onclickListener on ViewHolder
+        userLists= view.findViewById(R.id.userLists);
         userLists.setLayoutManager(new LinearLayoutManager(getActivity())); //allows custom layout unlike ListView
         return view;
     }
@@ -58,74 +58,100 @@ public class AllUsersFragment extends Fragment {
                     android.Manifest.permission.READ_CONTACTS)) {
 
             } else {
-                ActivityCompat.requestPermissions(getActivity(),
-                        new String[]{android.Manifest.permission.READ_CONTACTS},
+                requestPermissions(new String[]{android.Manifest.permission.READ_CONTACTS},
                         MY_PERMISSIONS_REQUEST_READ_CONTACTS);
             }
-        } else {
-            try {
-                InputStream file = new BufferedInputStream(getContext().openFileInput("listAllContacts"));
-                byte[] data = new byte[file.available()];
-                file.read(data, 0, file.available());
-                listAllContacts = new ArrayList<String>(Arrays.asList(new String(data).replace("[","").replace("]","").split("\\s*,\\s*")));
-                file.close();
-            } catch (Exception noFile) {
+        }
+        else{
 
-            }
-            if(listAllContacts==null) {
-                listAllContacts = contactRegisteredForApp();
-                try {
-                    OutputStream file = new BufferedOutputStream(getContext().openFileOutput("listAllContacts", MODE_PRIVATE));
-                    file.write(listAllContacts.toString().getBytes());
-                    file.close();
-                } catch (Exception noFile) {
-                    Log.e("Exception", "File write failed: " + noFile.toString());
+           showAllUsers();
+        }
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_READ_CONTACTS: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                    showAllUsers();
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
                 }
+                return;
             }
 
-                Query getAllFriendsData = FirebaseDatabase.getInstance().getReference().child("Users");
-                FirebaseRecyclerOptions<UserInformation> options = new FirebaseRecyclerOptions.Builder<UserInformation>()
-                        .setQuery(getAllFriendsData, UserInformation.class)
-                        .build();
-                FirebaseRecyclerAdapter<UserInformation, IndividualUserInfo> getAllFriendsList=new FirebaseRecyclerAdapter<UserInformation, IndividualUserInfo>(options) {
-                    @Override
-                    protected void onBindViewHolder(@NonNull IndividualUserInfo eachFriendDetails, int position, @NonNull UserInformation userDetails) {
-                        if(listAllContacts.contains(userDetails.phoneNumber)){
-                            eachFriendDetails.setFirstName(userDetails.displayName);
-                            eachFriendDetails.setProfileThumbnail(userDetails.profileThumbnail);
-                            final String userId=getRef(position).getKey();
-                            final String displayName = userDetails.displayName;
-                            final String profileThumbnail = userDetails.profileThumbnail;
-                            eachFriendDetails.itemView.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View arg0) {
-                                    Intent chatWindow = new Intent(refOfChatActicity, ChatWindowActivity.class);
-                                    chatWindow.putExtra("userId",userId);
-                                    chatWindow.putExtra("userName",displayName);
-                                    chatWindow.putExtra("profileThumbnail",profileThumbnail);
-                                    refOfChatActicity.startActivity(chatWindow);
-                                } });
-                        }
-                        else{
-                            eachFriendDetails.itemView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
-                            eachFriendDetails.itemView.setVisibility(View.GONE);
-                        }
-                    }
-                    @NonNull
-                    @Override
-                    public IndividualUserInfo onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                        View view = LayoutInflater.from(parent.getContext())
-                                .inflate(R.layout.single_user_chat, parent, false);
-                        return new IndividualUserInfo(view);
-                    }
-                };
-                userLists.setAdapter(getAllFriendsList);
-                getAllFriendsList.startListening();
+            // other 'case' lines to check for other
+            // permissions this app might request.
         }
     }
 
+    private void showAllUsers() {
+        try {
+            InputStream file = new BufferedInputStream(getContext().openFileInput("listAllContacts"));
+            byte[] data = new byte[file.available()];
+            file.read(data, 0, file.available());
+            listAllContacts = new ArrayList(Arrays.asList(new String(data).replace("[","").replace("]","").split("\\s*,\\s*")));
+            file.close();
+        } catch (Exception noFile) {
+
+        }
+        if(listAllContacts==null) {
+            listAllContacts = contactRegisteredForApp();
+            try {
+                OutputStream file = new BufferedOutputStream(getContext().openFileOutput("listAllContacts", MODE_PRIVATE));
+                file.write(listAllContacts.toString().getBytes());
+                file.close();
+            } catch (Exception noFile) {
+                Log.e("Exception", "File write failed: " + noFile.toString());
+            }
+        }
+
+        Query getAllFriendsData = FirebaseDatabase.getInstance().getReference().child("Users");
+        FirebaseRecyclerOptions<UserInformation> options = new FirebaseRecyclerOptions.Builder<UserInformation>()
+                .setQuery(getAllFriendsData, UserInformation.class)
+                .build();
+        FirebaseRecyclerAdapter<UserInformation, IndividualUserInfo> getAllFriendsList=new FirebaseRecyclerAdapter<UserInformation, IndividualUserInfo>(options) {
+            @Override
+            protected void onBindViewHolder(@NonNull IndividualUserInfo eachFriendDetails, int position, @NonNull UserInformation userDetails) {
+                if(listAllContacts.contains(userDetails.phoneNumber)){
+                    eachFriendDetails.setFirstName(userDetails.displayName);
+                    eachFriendDetails.setProfileThumbnail(userDetails.profileThumbnail);
+                    final String userId=getRef(position).getKey();
+                    final String displayName = userDetails.displayName;
+                    final String profileThumbnail = userDetails.profileThumbnail;
+                    eachFriendDetails.itemView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View arg0) {
+                            Intent chatWindow = new Intent(refOfChatActivity, ChatWindowActivity.class);
+                            chatWindow.putExtra("userId",userId);
+                            chatWindow.putExtra("userName",displayName);
+                            chatWindow.putExtra("profileThumbnail",profileThumbnail);
+                            refOfChatActivity.startActivity(chatWindow);
+                        } });
+                }
+                else{
+                    eachFriendDetails.itemView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
+                    eachFriendDetails.itemView.setVisibility(View.GONE);
+                }
+            }
+            @NonNull
+            @Override
+            public IndividualUserInfo onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.single_user_chat, parent, false);
+                return new IndividualUserInfo(view);
+            }
+        };
+        userLists.setAdapter(getAllFriendsList);
+        getAllFriendsList.startListening();
+    }
+
     public ArrayList<String> contactRegisteredForApp(){
-        ArrayList<String> listAllContactName = new ArrayList<String>();
         ArrayList<String> listAllContacts = new ArrayList<String>();
         ContentResolver cr = getActivity().getContentResolver();
         Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI,
@@ -151,28 +177,6 @@ public class AllUsersFragment extends Fragment {
         return listAllContacts;
 
     }
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode,
-//                                           String permissions[], int[] grantResults) {
-//        switch (requestCode) {
-//            case MY_PERMISSIONS_REQUEST_READ_CONTACTS: {
-//                if (grantResults.length > 0
-//                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                    ArrayList<String> listAllContacts=contactRegisteredForApp();
-//                    try {
-//                        OutputStream file = new BufferedOutputStream(getContext().openFileOutput("dataFile", MODE_PRIVATE));
-//                        file.write(listAllContacts.toString().getBytes());
-//                        file.close();
-//                    } catch (Exception noFile) {
-//                    }
-//                } else {
-//                }
-//                return;
-//            }
-//        }
-//    }
-
-
 
     public static class IndividualUserInfo extends RecyclerView.ViewHolder {
         View mView;

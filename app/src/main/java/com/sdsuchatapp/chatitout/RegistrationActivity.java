@@ -4,11 +4,10 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -17,7 +16,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -37,11 +35,12 @@ import java.util.Map;
 import de.hdodenhof.circleimageview.CircleImageView;
 import id.zelory.compressor.Compressor;
 
+//Reference for Image cropping: http://square.github.io/picasso/
+//Picasso is a cropping library for android which we used for the image feature.
 public class RegistrationActivity extends AppCompatActivity {
 
+    private final String TAG = "RegistrationActivity";
     private DatabaseReference database;
-    private static final int INTENT_EXAMPLE_REQUEST = 123;
-    private Toolbar toolbar;
     private FirebaseUser currentUser;
     private StorageReference profilePictureStorage;
     private ProgressDialog progressDialog;
@@ -56,8 +55,6 @@ public class RegistrationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
-        toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
         profilePictureStorage = FirebaseStorage.getInstance().getReference();
         displayNameInput = findViewById(R.id.displayName);
         profilePictureView = findViewById(R.id.userImage);
@@ -80,9 +77,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 Picasso.get().load(profileThumbnail).placeholder(R.drawable.ic_person_black_48px).into(profilePictureView);
 
             }
-
         }
-
     }
 
     @Override
@@ -145,46 +140,37 @@ public class RegistrationActivity extends AppCompatActivity {
                         thumbnail.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                         final byte[] thumbnailBytes = baos.toByteArray();
                         final StorageReference profileThumbnailLocation = profilePictureStorage.child("profilePictures").child("thumbnail").child(uid+".jpg");
-                        profilePictureLocation.putFile(resultUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                                if(task.isSuccessful()){
+                        profilePictureLocation.putFile(resultUri).addOnCompleteListener(task -> {
+                            if(task.isSuccessful()){
 
-                                    final String downloadUrl = task.getResult().getDownloadUrl().toString();
+                                final String downloadUrl = task.getResult().getDownloadUrl().toString();
 
-                                    UploadTask uploadTask = profileThumbnailLocation.putBytes(thumbnailBytes);
-                                    uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                                            if(task.isSuccessful()){
-                                                final String thumbnailDownloadUrl = task.getResult().getDownloadUrl().toString();
-                                                Map pictures = new HashMap<>();
-                                                pictures.put("profilePicture",downloadUrl);
-                                                pictures.put("profileThumbnail",thumbnailDownloadUrl);
-                                                database.updateChildren(pictures).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                    @Override
-                                                    public void onComplete(@NonNull Task<Void> task) {
-                                                        if(task.isSuccessful()){
-                                                            Toast.makeText(getApplicationContext(), "Successful uploading", Toast.LENGTH_SHORT).show();
-                                                            Picasso.get().load(thumbnailDownloadUrl).into(profilePictureView);
-                                                            progressDialog.dismiss();
-                                                        }else {
-                                                            progressDialog.dismiss();
-                                                        }
-                                                    }
-                                                });
-                                            }else{
-                                                Toast.makeText(getApplicationContext(), "Error in Uploading Thumbnail", Toast.LENGTH_SHORT).show();
+                                UploadTask uploadTask = profileThumbnailLocation.putBytes(thumbnailBytes);
+                                uploadTask.addOnCompleteListener(task1 -> {
+                                    if(task1.isSuccessful()){
+                                        final String thumbnailDownloadUrl = task1.getResult().getDownloadUrl().toString();
+                                        Map pictures = new HashMap<>();
+                                        pictures.put("profilePicture",downloadUrl);
+                                        pictures.put("profileThumbnail",thumbnailDownloadUrl);
+                                        database.updateChildren(pictures).addOnCompleteListener((OnCompleteListener<Void>) task11 -> {
+                                            if(task11.isSuccessful()){
+                                                Log.d(TAG, "Successfully uploaded picture");
+                                                Picasso.get().load(thumbnailDownloadUrl).into(profilePictureView);
+                                                progressDialog.dismiss();
+                                            }else {
                                                 progressDialog.dismiss();
                                             }
-                                        }
-                                    });
+                                        });
+                                    }else{
+                                        Log.d(TAG, "Error in uploading thumbnail");
+                                        progressDialog.dismiss();
+                                    }
+                                });
 
 
-                                }else{
-                                    Toast.makeText(getApplicationContext(), "Error in Uploading Picture", Toast.LENGTH_SHORT).show();
-                                    progressDialog.dismiss();
-                                }
+                            }else{
+                                Log.d(TAG, "Error in uploading picture");
+                                progressDialog.dismiss();
                             }
                         });
                     } catch (IOException e) {
@@ -194,7 +180,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 }
 
                 else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
-                    Exception error = result.getError();
+                    Log.d(TAG, result.getError().toString());
             }
         }
     }
@@ -203,31 +189,29 @@ public class RegistrationActivity extends AppCompatActivity {
     public void loginUser(View view) {
         final String displayName = displayNameInput.getText().toString();
         if(TextUtils.isEmpty(displayName)){
-            displayNameInput.setError("Enter Display Name");
+            displayNameInput.setError("Please Enter Display Name");
         }
         else{
             Map pictures = new HashMap<>();
             pictures.put("displayName",displayName);
-            database.updateChildren(pictures).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if(task.isSuccessful()){
-                        Intent go = new Intent(getApplicationContext(),ChatActivity.class);
-                        Bundle bundle = new Bundle();
-                        HashMap<String,String> userData = new HashMap<>();
-                        userData.put("displayName", displayName);
-                        userData.put("profileThumbnail", profileThumbnail);
-                        userData.put("profilePicture", profilePicture);
-                        userData.put("phoneNumber",phoneNumber);
-                        userData.put("uid",uid);
-                        bundle.putSerializable("HashMap", userData);
-                        go.putExtras(bundle);
-                        startActivityForResult(go,INTENT_EXAMPLE_REQUEST);
+            database.updateChildren(pictures).addOnCompleteListener((OnCompleteListener<Void>) task -> {
+                if(task.isSuccessful()){
+                    Intent go = new Intent(getApplicationContext(),ChatActivity.class);
+                    Bundle bundle = new Bundle();
+                    HashMap<String,String> userData = new HashMap<>();
+                    userData.put("displayName", displayName);
+                    userData.put("profileThumbnail", profileThumbnail);
+                    userData.put("profilePicture", profilePicture);
+                    userData.put("phoneNumber",phoneNumber);
+                    userData.put("uid",uid);
+                    bundle.putSerializable("HashMap", userData);
+                    go.putExtras(bundle);
+                    startActivity(go);
+                    finish();
 
-                    }else {
-                        Toast.makeText(getApplicationContext(), "Error in Uploading Display Picture", Toast.LENGTH_SHORT).show();
+                }else {
+                    Log.d(TAG, "Error in uploading display picture");
 
-                    }
                 }
             });
         }

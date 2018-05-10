@@ -137,32 +137,19 @@ public class ChatWindowActivity extends AppCompatActivity {
         });
 
         //on click listeners for chat message buttons
-        chatSendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sendMessage();
-            }
+        chatSendButton.setOnClickListener(view -> sendMessage());
 
-
-        });
-
-        profileThumbnailView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent settingsIntent = new Intent(ChatWindowActivity.this, SettingsActivity.class);
-                startActivity(settingsIntent);
-            }
+        profileThumbnailView.setOnClickListener(view -> {
+            Intent settingsIntent = new Intent(ChatWindowActivity.this, SettingsActivity.class);
+            startActivity(settingsIntent);
         });
 
 
 
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                currentlyLoaded++;
-                position = 0;
-                showMoreMessages();
-            }
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            currentlyLoaded++;
+            position = 0;
+            showMoreMessages();
         });
     }
 
@@ -336,11 +323,8 @@ public class ChatWindowActivity extends AppCompatActivity {
             notificationMessage.put(currentUserName+"ChatItOut"+message,currentUserId);
 
 
-            messageNotification.child(chatWithUserId).push().setValue(notificationMessage).addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
+            messageNotification.child(chatWithUserId).push().setValue(notificationMessage).addOnSuccessListener(aVoid -> {
 
-                            }
             }
 
             );

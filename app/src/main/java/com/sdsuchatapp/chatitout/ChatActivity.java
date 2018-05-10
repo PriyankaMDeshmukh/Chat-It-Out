@@ -24,15 +24,12 @@ import java.util.List;
 public class ChatActivity extends AppCompatActivity {
 
     private ViewPager mViewPager;
-    private PageAdapter tabbedPageAdapter;
     private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-
-        tabbedPageAdapter=new PageAdapter(getSupportFragmentManager());
         mViewPager= findViewById(R.id.container);
         setUpViewPager(mViewPager);
         TabLayout tabLayout= findViewById(R.id.tabs);
@@ -56,7 +53,6 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_chat, menu);
         return true;
     }
