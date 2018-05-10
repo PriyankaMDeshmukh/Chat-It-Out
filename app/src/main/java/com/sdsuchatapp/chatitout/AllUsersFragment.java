@@ -3,7 +3,6 @@ package com.sdsuchatapp.chatitout;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -14,7 +13,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,7 +23,6 @@ import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.squareup.picasso.Picasso;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.InputStream;
@@ -71,7 +68,6 @@ public class AllUsersFragment extends Fragment {
                 byte[] data = new byte[file.available()];
                 file.read(data, 0, file.available());
                 listAllContacts = new ArrayList<String>(Arrays.asList(new String(data).replace("[","").replace("]","").split("\\s*,\\s*")));
-                Log.i("asdsa",listAllContacts.toString());
                 file.close();
             } catch (Exception noFile) {
 
@@ -84,8 +80,6 @@ public class AllUsersFragment extends Fragment {
                     file.close();
                 } catch (Exception noFile) {
                     Log.e("Exception", "File write failed: " + noFile.toString());
-
-           
                 }
             }
 
@@ -93,7 +87,6 @@ public class AllUsersFragment extends Fragment {
                 FirebaseRecyclerOptions<UserInformation> options = new FirebaseRecyclerOptions.Builder<UserInformation>()
                         .setQuery(getAllFriendsData, UserInformation.class)
                         .build();
-                Log.i("huh",options.toString());
                 FirebaseRecyclerAdapter<UserInformation, IndividualUserInfo> getAllFriendsList=new FirebaseRecyclerAdapter<UserInformation, IndividualUserInfo>(options) {
                     @Override
                     protected void onBindViewHolder(@NonNull IndividualUserInfo eachFriendDetails, int position, @NonNull UserInformation userDetails) {
@@ -115,12 +108,8 @@ public class AllUsersFragment extends Fragment {
                         }
                         else{
                             eachFriendDetails.itemView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
-
                             eachFriendDetails.itemView.setVisibility(View.GONE);
-
                         }
-
-
                     }
                     @NonNull
                     @Override
@@ -132,9 +121,6 @@ public class AllUsersFragment extends Fragment {
                 };
                 userLists.setAdapter(getAllFriendsList);
                 getAllFriendsList.startListening();
-
-
-
         }
     }
 
@@ -201,7 +187,6 @@ public class AllUsersFragment extends Fragment {
         public void setProfileThumbnail(String profileThumbnail) {
             CircleImageView profileThumbnailImage =mView.findViewById(R.id.userImage);
             Picasso.get().load(profileThumbnail).placeholder(R.drawable.defaultuser).into(profileThumbnailImage);
-
         }
     }
 }
