@@ -7,9 +7,12 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,8 +31,29 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     @NonNull
     @Override
     public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.messages_layout, parent,false);
+        View view;
+        if(viewType == 1){
+             view = LayoutInflater.from(parent.getContext()).inflate(R.layout.messages_layout_right, parent,false);
+        }
+        else{
+             view = LayoutInflater.from(parent.getContext()).inflate(R.layout.messages_layout_left, parent,false);
+        }
         return new MessageViewHolder(view);
+    }
+    //Reference: https://stackoverflow.com/questions/37677520/how-to-do-threaded-message-view-with-send-and-received-messages-on-two-sides-wit?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+    //Edit by: Priyanka Deshmukh
+    @Override
+    public int getItemViewType(int position) {
+        auth = FirebaseAuth.getInstance();
+        String currentUserId = auth.getCurrentUser().getUid();
+        MessageBean currentMessage = messageList.get(position);
+        String fromUserId = currentMessage.getFrom();
+        if (fromUserId.equalsIgnoreCase(currentUserId)) {
+            return 1;
+        }
+        else{
+            return 2;
+        }
     }
 
     @Override
@@ -42,10 +66,14 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         if(fromUserId.equalsIgnoreCase(currentUserId)){
             holder.userMessage.setBackgroundColor(Color.WHITE);
             holder.userMessage.setTextColor(Color.BLACK);
+
+
+
         }
         else{
             holder.userMessage.setBackgroundResource(R.drawable.message_background);
             holder.userMessage.setTextColor(Color.WHITE);
+
 
         }
         holder.userMessage.setText(currentMessage.getMessage());
