@@ -15,6 +15,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -50,6 +52,7 @@ public class ChatWindowActivity extends AppCompatActivity {
     private MessageAdapter messageAdapter;
 
     private SwipeRefreshLayout swipeRefreshLayout;
+    private DatabaseReference messageNotification;
 
     private int totalLoad = 10;
     private int currentlyLoaded = 1;
@@ -87,6 +90,7 @@ public class ChatWindowActivity extends AppCompatActivity {
 
 
         database = FirebaseDatabase.getInstance().getReference();
+        messageNotification = FirebaseDatabase.getInstance().getReference().child("MessageNotifications");
         auth = FirebaseAuth.getInstance();
         currentUserId = auth.getCurrentUser().getUid();
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -279,6 +283,8 @@ public class ChatWindowActivity extends AppCompatActivity {
             HashMap userMessageMap = new HashMap();
             userMessageMap.put(senderReference+"/"+id, messageMap);
             userMessageMap.put(recieverReference+"/"+id, messageMap);
+
+
             chatMessage.setText("");
             //now add this to firebase database
             database.updateChildren(userMessageMap, (databaseError, databaseReference) -> {
@@ -286,6 +292,18 @@ public class ChatWindowActivity extends AppCompatActivity {
                     Log.d("ChatWindowActivity", databaseError.getMessage().toString());
                 }
             });
+            HashMap<String,String> notificationMessage =new HashMap<>();
+            notificationMessage.put(currentUserId+"ChatItOut"+message,"");
+
+
+            messageNotification.child(chatWithUserId).push().setValue(notificationMessage).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+
+                            }
+            }
+
+            );
         }
     }
 }

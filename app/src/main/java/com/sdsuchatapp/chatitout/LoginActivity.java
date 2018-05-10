@@ -16,6 +16,8 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
@@ -31,6 +33,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -204,6 +208,9 @@ public class LoginActivity extends AppCompatActivity {
                             // [START_EXCLUDE]
                             updateUI(STATE_SIGNIN_SUCCESS, user);
                             // [END_EXCLUDE]
+
+
+
                         } else {
                             // Sign in failed, display a message and update the UI
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
@@ -328,12 +335,14 @@ public class LoginActivity extends AppCompatActivity {
                                 });
                             } else {
                                 database = database.child(uid);
+                                String userPhoneToken = FirebaseInstanceId.getInstance().getToken();
                                 final HashMap<String, String> userData = new HashMap<>();
                                 userData.put("displayName", "");
                                 userData.put("profileThumbnail", "default");
                                 userData.put("profilePicture", "default");
                                 userData.put("uid",uid);
                                 userData.put("phoneNumber",phoneNumber.getText().toString());
+                                userData.put("token",userPhoneToken);
                                 database.setValue(userData).addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
