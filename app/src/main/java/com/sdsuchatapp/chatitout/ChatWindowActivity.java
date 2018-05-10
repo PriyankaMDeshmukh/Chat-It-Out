@@ -60,7 +60,7 @@ public class ChatWindowActivity extends AppCompatActivity {
     private int position = 0;
     private String firstMessageKey = "";
     private String previousMessageKey = "";
-
+    String currentUserName="Chat It Out";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -266,6 +266,22 @@ public class ChatWindowActivity extends AppCompatActivity {
 
             DatabaseReference userMessage = database.child("messages").child(currentUserId).child(chatWithUserId).push();
 
+
+            database.addListenerForSingleValueEvent(new ValueEventListener(){
+
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot){
+                    currentUserName = dataSnapshot.child("Users").child(currentUserId).child("displayName").getValue(String.class); //This is a1
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+
+            });
+
+
             //Store messages in Firebase for both the sender and reciever
             String senderReference = "messages/"+currentUserId+"/"+chatWithUserId;
             String recieverReference = "messages/"+chatWithUserId+"/"+currentUserId;
@@ -293,7 +309,7 @@ public class ChatWindowActivity extends AppCompatActivity {
                 }
             });
             HashMap<String,String> notificationMessage =new HashMap<>();
-            notificationMessage.put(currentUserId+"ChatItOut"+message,"");
+            notificationMessage.put(currentUserName+"ChatItOut"+message,currentUserId);
 
 
             messageNotification.child(chatWithUserId).push().setValue(notificationMessage).addOnSuccessListener(new OnSuccessListener<Void>() {
