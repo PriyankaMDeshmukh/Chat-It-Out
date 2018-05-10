@@ -16,7 +16,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    compileOptions{
+    compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
@@ -92,8 +92,6 @@ dependencies {
 
     // Guava support for Room
     implementation "android.arch.persistence.room:guava:1.1.0-rc1"
-
-
 
 
 }

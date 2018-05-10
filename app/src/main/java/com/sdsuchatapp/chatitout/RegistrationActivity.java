@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -40,7 +41,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
     private DatabaseReference database;
     private static final int INTENT_EXAMPLE_REQUEST = 123;
-
+    private Toolbar toolbar;
     private FirebaseUser currentUser;
     private StorageReference profilePictureStorage;
     private ProgressDialog progressDialog;
@@ -55,6 +56,8 @@ public class RegistrationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         profilePictureStorage = FirebaseStorage.getInstance().getReference();
         displayNameInput = findViewById(R.id.displayName);
         profilePictureView = findViewById(R.id.userImage);
