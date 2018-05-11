@@ -74,6 +74,14 @@ public class ChatActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+    }
 
 
 }
