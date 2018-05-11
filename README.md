@@ -21,6 +21,9 @@ Future Scope:
       3.) "Last seen"/"seen" feature of WhatsApp
       4.) Share Images
       5.) Group Chat
+
+Known Errors:
+      1.) While Syncing contacts and fetching contacts that registered the App we couldn't show the progress Bar.(But achieved the same in Activity.)
       
 References:
       1.)Phone Authentication, https://firebase.google.com/docs/auth/android/phone-auth
