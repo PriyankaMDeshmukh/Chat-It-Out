@@ -199,12 +199,16 @@ public class RegistrationActivity extends AppCompatActivity {
                 if(task.isSuccessful()){
                     Intent go = new Intent(getApplicationContext(),ChatActivity.class);
                     Bundle bundle = new Bundle();
+
+                    String userPhoneToken = FirebaseInstanceId.getInstance().getToken();
+
                     HashMap<String,String> userData = new HashMap<>();
                     userData.put(getString(R.string.usersName), displayName);
                     userData.put(getString(R.string.usersThumbnail), profileThumbnail);
                     userData.put(getString(R.string.usersPicture), profilePicture);
                     userData.put(getString(R.string.usersPhone),phoneNumber);
                     userData.put(getString(R.string.usersUid),uid);
+                    userData.put(getString(R.string.usersToken),userPhoneToken);
                     bundle.putSerializable("HashMap", userData);
                     go.putExtras(bundle);
                     startActivity(go);
