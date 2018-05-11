@@ -10,6 +10,8 @@ import android.content.ContentValues;
  * Created by priyankadeshmukh on 5/7/18.
  */
 
+//future scope
+
 public class DbHandler extends SQLiteOpenHelper{
 
     private static final int dbVersion=1;
