@@ -21,6 +21,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -209,6 +210,10 @@ public class RegistrationActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if(task.isSuccessful()){
+                        String userPhoneToken = FirebaseInstanceId.getInstance().getToken();
+
+
+
                         Intent go = new Intent(getApplicationContext(),ChatActivity.class);
                         Bundle bundle = new Bundle();
                         HashMap<String,String> userData = new HashMap<>();
@@ -217,6 +222,7 @@ public class RegistrationActivity extends AppCompatActivity {
                         userData.put("profilePicture", profilePicture);
                         userData.put("phoneNumber",phoneNumber);
                         userData.put("uid",uid);
+                        userData.put("token",userPhoneToken);
                         bundle.putSerializable("HashMap", userData);
                         go.putExtras(bundle);
                         startActivityForResult(go,INTENT_EXAMPLE_REQUEST);
