@@ -63,7 +63,7 @@ public class ChatWindowActivity extends AppCompatActivity {
     private int position = 0;
     private String firstMessageKey = "";
     private String previousMessageKey = "";
-    String currentUserName=getString(R.string.defaultUserName);
+    String currentUserName="Chat It Out";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

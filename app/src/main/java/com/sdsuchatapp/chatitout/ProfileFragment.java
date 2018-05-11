@@ -132,12 +132,13 @@ public class ProfileFragment extends Fragment {
     public void changeDisplayImage(View view) {
         CropImage.activity()
                 .setAspectRatio(1,1)
-                .start(getContext(),this);
+                .start(getActivity(),this);
 
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
@@ -182,6 +183,7 @@ public class ProfileFragment extends Fragment {
                                                         Toast.makeText(getContext(), "Successful uploading", Toast.LENGTH_SHORT).show();
                                                         Picasso.get().load(thumbnailDownloadUrl).into(profilePictureView);
                                                         progressDialog.dismiss();
+
                                                     }else {
                                                         progressDialog.dismiss();
                                                     }
@@ -223,6 +225,7 @@ public class ProfileFragment extends Fragment {
                 public void onComplete(@NonNull Task<Void> task) {
                     if(task.isSuccessful()){
                         Toast.makeText(getContext(), "Changes saved successfully", Toast.LENGTH_SHORT).show();
+
                     }else {
                         Toast.makeText(getContext(), "Error in Uploading Display Picture", Toast.LENGTH_SHORT).show();
 

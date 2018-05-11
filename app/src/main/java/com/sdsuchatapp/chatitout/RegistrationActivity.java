@@ -194,13 +194,15 @@ public class RegistrationActivity extends AppCompatActivity {
         }
         else{
             Map pictures = new HashMap<>();
+            String userPhoneToken = FirebaseInstanceId.getInstance().getToken();
             pictures.put(getString(R.string.usersName),displayName);
+            pictures.put(getString(R.string.usersToken),userPhoneToken);
             database.updateChildren(pictures).addOnCompleteListener((OnCompleteListener<Void>) task -> {
                 if(task.isSuccessful()){
                     Intent go = new Intent(getApplicationContext(),ChatActivity.class);
                     Bundle bundle = new Bundle();
 
-                    String userPhoneToken = FirebaseInstanceId.getInstance().getToken();
+
 
                     HashMap<String,String> userData = new HashMap<>();
                     userData.put(getString(R.string.usersName), displayName);

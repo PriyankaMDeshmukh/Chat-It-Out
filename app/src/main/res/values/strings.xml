@@ -51,7 +51,6 @@
     <string name="chatsHeader">Chats</string>
     <string name="friendsHeader">Friends</string>
     <string name="profileHeader">Profile</string>
-    <string name="defaultUserName">Chat It Out</string>
     <string name="userId">userId</string>
     <string name="userName">userName</string>
     <string name="firebaseMessageNotif">MessageNotifications</string>
