@@ -27,6 +27,7 @@ Known Errors:
       
 References:
       1.)Phone Authentication, https://firebase.google.com/docs/auth/android/phone-auth
+      
       2.)Notification, https://firebase.google.com/docs/cloud-messaging/admin/send-messages
       3.)Display Image, http://square.github.io/picasso/
       4.)Crop Images, https://github.com/ArthurHub/Android-Image-Cropper
