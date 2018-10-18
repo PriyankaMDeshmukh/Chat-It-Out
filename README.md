@@ -33,7 +33,7 @@ References:</br>
       5.)Chat UI(Positioning Messages LEFT and Right ), https://blog.sendbird.com/android-chat-tutorial-building-a-messaging-ui</br>
       6.)Notification Beta Version, https://firebase.google.com/docs/functions/beta-v1-diff</br>
      
-      </br>
+    
 
 
 Git : https://github.com/PriyankaMDeshmukh/Chat-It-Out</br>
